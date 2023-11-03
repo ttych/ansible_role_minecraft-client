@@ -1,0 +1,8 @@
+---
+
+want_minecraft_client: no
+
+minecraft_client_debian_prereqs:
+  - libgdk-pixbuf2.0-0
+minecraft_client_debian_package: https://launcher.mojang.com/download/Minecraft.deb
+minecraft_client_default_package: https://launcher.mojang.com/download/Minecraft.tar.gz

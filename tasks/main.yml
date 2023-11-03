@@ -1,0 +1,23 @@
+---
+
+- block:
+    - block:
+        - name: install prereqs
+          apt:
+            name: "{{ minecraft_client_debian_prereqs }}"
+
+        - name: install minecraft client
+          apt:
+            deb: "{{ minecraft_client_debian_package }}"
+
+      when: ansible_os_family == "Debian"
+
+    - block:
+        - name: default install
+          fail:
+            msg: "NOT IMPLEMENTED !"
+
+      when:
+        - ansible_os_family != "Debian"
+
+  when: want_minecraft_client
