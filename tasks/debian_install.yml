@@ -1,0 +1,13 @@
+---
+
+- name: install prereqs
+  ansible.builtin.apt:
+    name: "{{ minecraft_client_debian_prereqs }}"
+
+- name: install minecraft client
+  ansible.builtin.apt:
+    deb: "{{ minecraft_client_debian_package }}"
+
+- name: set minecraft_client_installed
+  ansible.builtin.set_fact:
+    minecraft_client_installed: yes

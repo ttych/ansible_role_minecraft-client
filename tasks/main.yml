@@ -1,23 +1,18 @@
 ---
 
+- name: init installed state
+  ansible.builtin.set_fact:
+    minecraft_client_installed: no
+
+
 - block:
-    - block:
-        - name: install prereqs
-          apt:
-            name: "{{ minecraft_client_debian_prereqs }}"
 
-        - name: install minecraft client
-          apt:
-            deb: "{{ minecraft_client_debian_package }}"
+    - include_tasks: debian_install.yml
+      when: ansible_facts.distribution == "Debian"
 
-      when: ansible_os_family == "Debian"
-
-    - block:
-        - name: default install
-          fail:
-            msg: "NOT IMPLEMENTED !"
-
+    - include_tasks: linux_install.yml
       when:
-        - ansible_os_family != "Debian"
+        - ansible_facts.system == "Linux"
+        - not minecraft_client_installed
 
   when: want_minecraft_client

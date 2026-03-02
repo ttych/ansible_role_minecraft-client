@@ -1,0 +1,87 @@
+---
+
+- name: minecraft bin directory
+  ansible.builtin.file:
+    path: "{{ minecraft_client_default_bin_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: minecraft icons directory
+  ansible.builtin.file:
+    path: "{{ minecraft_client_default_icons_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: deploy minecraft icon
+  ansible.builtin.copy:
+    src: icons/minecraft-launcher.svg
+    dest: "{{ minecraft_client_default_icon }}"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: minecraft desktop applications directory
+  ansible.builtin.file:
+    path: "{{ minecraft_client_default_applications_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: deploy minecraft desktop application
+  ansible.builtin.template:
+    src: desktop/minecraft-launcher.desktop
+    dest: "{{ minecraft_client_default_launcher }}"
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: check minecraft launcher
+  ansible.builtin.stat:
+    path: "{{ minecraft_client_default_bin }}"
+  register: t_minecraft_client_default_bin
+
+- block:
+    - name: download minecraft launcher
+      ansible.builtin.get_url:
+        url: "{{ minecraft_client_default_package }}"
+        dest: "{{ tmpdir }}/{{ minecraft_client_default_archive_filename }}"
+        mode: '0644'
+
+    - name: extract mise archive
+      ansible.builtin.unarchive:
+        src: "{{ tmpdir }}/{{ minecraft_client_default_archive_filename }}"
+        dest: "{{ tmpdir }}"
+        remote_src: yes
+        creates: "{{ tmpdir }}/minecraft-launcher/minecraft-launcher"
+
+    - name: "install minecraft-launcher to {{ minecraft_client_default_bin }}"
+      ansible.builtin.copy:
+        src: "{{ tmpdir }}/minecraft-launcher/minecraft-launcher"
+        dest: "{{ minecraft_client_default_bin }}"
+        mode: '0755'
+        owner: root
+        group: root
+        remote_src: yes
+
+    - name: clean up temporary files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ tmpdir }}/{{ minecraft_client_default_archive_filename }}"
+        - "{{ tmpdir }}/minecraft-launcher"
+
+    - name: validate desktop file
+      command:
+        cmd: "desktop-file-validate '{{ minecraft_client_default_launcher }}'"
+
+    - name: update desktop database
+      command:
+        cmd: "update-desktop-database '{{ minecraft_client_default_applications_dir }}'"
+
+  when: not t_minecraft_client_default_bin.stat.exists

@@ -3,6 +3,17 @@
 want_minecraft_client: no
 
 minecraft_client_debian_prereqs:
-  - libgdk-pixbuf2.0-0
+  - libgdk-pixbuf-2.0-0
 minecraft_client_debian_package: https://launcher.mojang.com/download/Minecraft.deb
-minecraft_client_default_package: https://launcher.mojang.com/download/Minecraft.tar.gz
+
+minecraft_client_default_archive_filename: Minecraft.tar.gz
+minecraft_client_default_package: "https://launcher.mojang.com/download/{{ minecraft_client_default_archive_filename }}"
+minecraft_client_default_bin_dir: /usr/local/bin
+minecraft_client_default_bin_name: minecraft-launcher
+minecraft_client_default_bin: "{{ minecraft_client_default_bin_dir }}/{{ minecraft_client_default_bin_name }}"
+minecraft_client_default_icons_dir: /usr/local/share/icons/hicolor/symbolic/apps
+minecraft_client_default_icon: "{{ minecraft_client_default_icons_dir }}/minecraft-launcher.svg"
+minecraft_client_default_applications_dir: /usr/local/share/applications
+minecraft_client_default_launcher: "{{ minecraft_client_default_applications_dir }}/minecraft-launcher.desktop"
+
+tmpdir: /tmp
